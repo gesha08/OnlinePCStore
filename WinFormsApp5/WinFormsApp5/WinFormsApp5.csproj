@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <Compile Update="CustomerProfile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="CustomerProfile.Designer.cs">
+      <DependentUpon>CustomerProfile.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="CustomerProfile.resx">
+      <DependentUpon>CustomerProfile.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="FinishOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FinishOrder.Designer.cs">
+      <DependentUpon>FinishOrder.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="FinishOrder.resx">
+      <DependentUpon>FinishOrder.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Controllers\Controllers.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
