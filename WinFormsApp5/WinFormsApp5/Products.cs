@@ -1,12 +1,12 @@
 using Controllers;
 using Data;
 using Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 using System.Linq;
 
 namespace WinFormsApp5
@@ -16,20 +16,22 @@ namespace WinFormsApp5
         private readonly ProductController productController;
         private readonly StoreContext storeContext;
         private readonly User currentUser;
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
         private List<OrderItem> cartItems = new List<OrderItem>();
         private List<Product> loadedProducts = null!;
 
-        public Products(User user)
+        public Products(User user, DbContextOptions<StoreContext> options)
         {
             InitializeComponent();
-            storeContext = new StoreContext();
-            productController = new ProductController(storeContext);
             currentUser = user;
+            dbContextOptions = options;
+            storeContext = new StoreContext(options);
+            productController = new ProductController(storeContext);
         }
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login();
+            var loginForm = new Login(dbContextOptions);
             loginForm.Show();
             this.Hide();
         }
@@ -88,13 +90,13 @@ namespace WinFormsApp5
 
         private void viewCartButton_Click(object sender, EventArgs e)
         {
-            var cartForm = new Cart(currentUser, cartItems);
+            var cartForm = new Cart(currentUser, cartItems, dbContextOptions);
             cartForm.Show();
         }
 
         private void profileButton_Click(object sender, EventArgs e)
         {
-            var customerProfileForm = new CustomerProfile(currentUser);
+            var customerProfileForm = new CustomerProfile(currentUser, dbContextOptions);
             customerProfileForm.ShowDialog();
         }
 

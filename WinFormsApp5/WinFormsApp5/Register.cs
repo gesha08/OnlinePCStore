@@ -1,5 +1,6 @@
 using Controllers;
 using Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Windows.Forms;
 
@@ -9,11 +10,13 @@ namespace WinFormsApp5
     {
         private readonly UserController userController;
         private readonly StoreContext storeContext;
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public Register()
+        public Register(DbContextOptions<StoreContext> options)
         {
             InitializeComponent();
-            storeContext = new StoreContext();
+            dbContextOptions = options;
+            storeContext = new StoreContext(options);
             userController = new UserController(storeContext);
         }
 
@@ -29,7 +32,7 @@ namespace WinFormsApp5
             if (user != null)
             {
                 MessageBox.Show("Registration successful!");
-                var loginForm = new Login();
+                var loginForm = new Login(dbContextOptions);
                 loginForm.Show();
                 this.Hide();
             }
@@ -41,7 +44,7 @@ namespace WinFormsApp5
 
         private void backButton_Click(object sender, EventArgs e)
         {
-            var loginForm = new Login();
+            var loginForm = new Login(dbContextOptions);
             loginForm.Show();
             this.Hide();
         }

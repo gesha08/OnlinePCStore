@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 using System.Linq;
 
 namespace WinFormsApp5
@@ -10,24 +13,18 @@ namespace WinFormsApp5
         [STAThread]
         static void Main()
         {
-            using (var context = new Data.StoreContext())
-            {
-                context.Database.EnsureCreated(); // Ensure DB is created
-                if (!context.Users.Any(u => u.Username == "admin"))
-                {
-                    context.Users.Add(new Data.Entities.User
-                    {
-                        Username = "admin",
-                        Password = "admin",
-                        Role = Data.Entities.Role.Admin
-                    });
-                    context.SaveChanges();
-                }
-            }
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<Data.StoreContext>();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Login());
+            Application.Run(new Login(optionsBuilder.Options));
         }
     }
 }

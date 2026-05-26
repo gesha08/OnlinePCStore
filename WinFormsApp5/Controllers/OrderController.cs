@@ -1,4 +1,5 @@
 using Data;
+using Data.Enums;
 using Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,14 +11,16 @@ namespace Controllers
 {
     public class OrderController
     {
-        public OrderController()
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
+
+        public OrderController(DbContextOptions<StoreContext> options)
         {
-            // Constructor without context parameter
+            dbContextOptions = options;
         }
 
         public async Task<Order> CreateOrderAsync(User user, List<OrderItem> orderItems, string address, string paymentMethod, string? cardNumber, string? expiryDate, string? cvv)
         {
-            using (var context = new StoreContext())
+            using (var context = new StoreContext(dbContextOptions))
             {
                 var order = new Order
                 {
@@ -57,7 +60,7 @@ namespace Controllers
 
         public async Task<List<Order>> GetAllOrdersAsync()
         {
-            using (var context = new StoreContext())
+            using (var context = new StoreContext(dbContextOptions))
             {
                 return await context.Orders
                     .Include(o => o.User)
@@ -69,7 +72,7 @@ namespace Controllers
 
         public async Task<List<Order>> GetOrdersByUserIdAsync(int userId)
         {
-            using (var context = new StoreContext())
+            using (var context = new StoreContext(dbContextOptions))
             {
                 return await context.Orders
                     .Where(o => o.UserId == userId)
@@ -81,7 +84,7 @@ namespace Controllers
 
         public async Task FinishOrderAsync(int orderId)
         {
-            using (var context = new StoreContext())
+            using (var context = new StoreContext(dbContextOptions))
             {
                 var order = await context.Orders.FindAsync(orderId);
                 if (order != null)
@@ -94,7 +97,7 @@ namespace Controllers
 
         public async Task<bool> CancelOrderAsync(int orderId, int userId)
         {
-            using (var context = new StoreContext())
+            using (var context = new StoreContext(dbContextOptions))
             {
                 var order = await context.Orders
                                         .Include(o => o.OrderItems)

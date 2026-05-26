@@ -7,11 +7,11 @@ namespace WinFormsApp5
 {
     public partial class FinishOrder : Form
     {
-        public string Address { get; private set; }
-        public string PaymentMethod { get; private set; }
-        public string CardNumber { get; private set; }
-        public string ExpiryDate { get; private set; }
-        public string Cvv { get; private set; }
+        public string Address { get; private set; } = "";
+        public string PaymentMethod { get; private set; } = "";
+        public string CardNumber { get; private set; } = "";
+        public string ExpiryDate { get; private set; } = "";
+        public string Cvv { get; private set; } = "";
 
         public FinishOrder()
         {

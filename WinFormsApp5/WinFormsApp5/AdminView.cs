@@ -1,9 +1,14 @@
 using Controllers;
 using Data;
 using Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+
 
 namespace WinFormsApp5
 {
@@ -13,15 +18,17 @@ namespace WinFormsApp5
         private readonly CategoryController categoryController;
         private readonly OrderController orderController;
         private readonly StoreContext storeContext;
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
         private byte[]? selectedProductPicture;
 
-        public AdminView()
+        public AdminView(DbContextOptions<StoreContext> options)
         {
             InitializeComponent();
-            storeContext = new StoreContext();
+            dbContextOptions = options;
+            storeContext = new StoreContext(options);
             productController = new ProductController(storeContext);
             categoryController = new CategoryController(storeContext);
-            orderController = new OrderController();
+            orderController = new OrderController(options);
 
             productsDataGridView.SelectionChanged += new System.EventHandler(productsDataGridView_SelectionChanged);
         }
@@ -44,7 +51,7 @@ namespace WinFormsApp5
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login();
+            var loginForm = new Login(dbContextOptions);
             loginForm.Show();
             this.Hide();
         }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\11B_23\\source\\repos\\WinFormsApp5\\Data\\Data.csproj": {}
+    "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\Data\\Data.csproj": {}
   },
   "projects": {
-    "C:\\Users\\11B_23\\source\\repos\\WinFormsApp5\\Data\\Data.csproj": {
+    "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\11B_23\\source\\repos\\WinFormsApp5\\Data\\Data.csproj",
+        "projectUniqueName": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\Data\\Data.csproj",
         "projectName": "Data",
-        "projectPath": "C:\\Users\\11B_23\\source\\repos\\WinFormsApp5\\Data\\Data.csproj",
+        "projectPath": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\Data\\Data.csproj",
         "packagesPath": "C:\\Users\\11B_23\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\11B_23\\source\\repos\\WinFormsApp5\\Data\\obj\\",
+        "outputPath": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\Data\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\11B_23\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -59,6 +59,14 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.27, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             }
           },
           "imports": [

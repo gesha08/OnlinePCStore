@@ -1,6 +1,8 @@
 using Controllers;
 using Data;
+using Data.Enums;
 using Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +15,18 @@ namespace WinFormsApp5
     {
         private readonly OrderController orderController;
         private readonly User currentUser;
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public CustomerProfile(User user)
+        public CustomerProfile(User user, DbContextOptions<StoreContext> options)
         {
             InitializeComponent();
             currentUser = user;
-            orderController = new OrderController();
+            dbContextOptions = options;
+            orderController = new OrderController(options);
             this.Load += CustomerProfile_Load;
         }
 
-        private async void CustomerProfile_Load(object sender, EventArgs e)
+        private async void CustomerProfile_Load(object? sender, EventArgs e)
         {
             usernameLabel.Text = $"Welcome, {currentUser.Username}!";
             await LoadOrders();
@@ -62,8 +66,8 @@ namespace WinFormsApp5
                 var selectedRow = ordersDataGridView.Rows[e.RowIndex];
                 var orderId = (int)selectedRow.Cells["Id"]!.Value; // Use null-forgiving operator
                 
-                var statusCell = ordersDataGridView.Rows[e.RowIndex].Cells["Status"]!; // Use null-forgiving operator
-                if (statusCell.Value is not OrderStatus orderStatus) // No need for ?.Value after !
+                var statusCell = ordersDataGridView.Rows[e.RowIndex].Cells["Status"]; 
+                if (statusCell?.Value is not OrderStatus orderStatus) 
                 {
                     orderStatus = OrderStatus.Pending; // Default if status is null or not OrderStatus
                 }
@@ -100,8 +104,8 @@ namespace WinFormsApp5
 
             if (e.ColumnIndex == cancelColumn.Index && e.RowIndex >= 0)
             {
-                var statusCell = ordersDataGridView.Rows[e.RowIndex].Cells["Status"]!; // Use null-forgiving operator
-                if (statusCell.Value is not OrderStatus orderStatus) // No need for ?.Value after !
+                var statusCell = ordersDataGridView.Rows[e.RowIndex].Cells["Status"];
+                if (statusCell?.Value is not OrderStatus orderStatus) 
                 {
                     orderStatus = OrderStatus.Pending; // Default if status is null or not OrderStatus
                 }
@@ -112,9 +116,12 @@ namespace WinFormsApp5
                     e.Value = "N/A"; // Change button text
                     e.CellStyle.ForeColor = System.Drawing.Color.Gray; // Gray out text
                     e.CellStyle.SelectionForeColor = System.Drawing.Color.Gray;
-                    ordersDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex]!.Style.ForeColor = System.Drawing.Color.Gray; // Use null-forgiving operator
-                    // Make the cell read-only to prevent clicks
-                    ordersDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex]!.ReadOnly = true; // Use null-forgiving operator
+                    var cell = ordersDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    if (cell != null)
+                    {
+                        cell.Style.ForeColor = System.Drawing.Color.Gray;
+                        cell.ReadOnly = true;
+                    }
                 }
                 else
                 {
@@ -122,7 +129,11 @@ namespace WinFormsApp5
                     e.Value = "Cancel";
                     e.CellStyle.ForeColor = ordersDataGridView.DefaultCellStyle.ForeColor; // Use default
                     e.CellStyle.SelectionForeColor = ordersDataGridView.DefaultCellStyle.SelectionForeColor; // Use default
-                    ordersDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex]!.ReadOnly = false; // Use null-forgiving operator
+                    var cell = ordersDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                    if (cell != null)
+                    {
+                        cell.ReadOnly = false;
+                    }
                 }
             }
         }

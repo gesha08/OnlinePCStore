@@ -1,6 +1,7 @@
 using Controllers;
 using Data;
 using Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,16 @@ namespace WinFormsApp5
         private readonly OrderController orderController;
         private readonly List<OrderItem> cartItems;
         private readonly User currentUser;
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public Cart(User user, List<OrderItem> cartItems)
+
+        public Cart(User user, List<OrderItem> cartItems, DbContextOptions<StoreContext> options)
         {
             InitializeComponent();
             this.cartItems = cartItems;
-            orderController = new OrderController();
             currentUser = user;
+            dbContextOptions = options;
+            orderController = new OrderController(options);
         }
 
         private void backButton_Click(object? sender, EventArgs e)
@@ -29,7 +33,7 @@ namespace WinFormsApp5
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login();
+            var loginForm = new Login(dbContextOptions);
             loginForm.Show();
             this.Hide();
         }

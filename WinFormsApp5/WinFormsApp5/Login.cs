@@ -1,6 +1,8 @@
 using Controllers;
 using Data;
+using Data.Enums;
 using Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Windows.Forms;
 
@@ -10,11 +12,13 @@ namespace WinFormsApp5
     {
         private readonly UserController userController;
         private readonly StoreContext storeContext;
+        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public Login()
+        public Login(DbContextOptions<StoreContext> options)
         {
             InitializeComponent();
-            storeContext = new StoreContext();
+            dbContextOptions = options;
+            storeContext = new StoreContext(options);
             userController = new UserController(storeContext);
         }
 
@@ -26,12 +30,12 @@ namespace WinFormsApp5
                 MessageBox.Show("Login successful!");
                 if (user.Role == Role.Admin)
                 {
-                    var adminForm = new AdminView();
+                    var adminForm = new AdminView(dbContextOptions);
                     adminForm.Show();
                 }
                 else
                 {
-                    var productsForm = new Products(user);
+                    var productsForm = new Products(user, dbContextOptions);
                     productsForm.Show();
                 }
                 this.Hide();
@@ -44,7 +48,7 @@ namespace WinFormsApp5
 
         private void registerButton_Click(object sender, EventArgs e)
         {
-            var registerForm = new Register();
+            var registerForm = new Register(dbContextOptions);
             registerForm.Show();
             this.Hide();
         }
