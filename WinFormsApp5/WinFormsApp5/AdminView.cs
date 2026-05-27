@@ -18,17 +18,15 @@ namespace WinFormsApp5
         private readonly CategoryController categoryController;
         private readonly OrderController orderController;
         private readonly StoreContext storeContext;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
         private byte[]? selectedProductPicture;
 
-        public AdminView(DbContextOptions<StoreContext> options)
+        public AdminView()
         {
             InitializeComponent();
-            dbContextOptions = options;
-            storeContext = new StoreContext(options);
+            storeContext = new StoreContext();
             productController = new ProductController(storeContext);
             categoryController = new CategoryController(storeContext);
-            orderController = new OrderController(options);
+            orderController = new OrderController();
 
             productsDataGridView.SelectionChanged += new System.EventHandler(productsDataGridView_SelectionChanged);
         }
@@ -51,7 +49,7 @@ namespace WinFormsApp5
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login(dbContextOptions);
+            var loginForm = new Login();
             loginForm.Show();
             this.Hide();
         }

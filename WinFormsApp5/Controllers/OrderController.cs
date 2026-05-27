@@ -11,16 +11,13 @@ namespace Controllers
 {
     public class OrderController
     {
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
-
-        public OrderController(DbContextOptions<StoreContext> options)
+        public OrderController()
         {
-            dbContextOptions = options;
         }
 
         public async Task<Order> CreateOrderAsync(User user, List<OrderItem> orderItems, string address, string paymentMethod, string? cardNumber, string? expiryDate, string? cvv)
         {
-            using (var context = new StoreContext(dbContextOptions))
+            using (var context = new StoreContext())
             {
                 var order = new Order
                 {
@@ -60,7 +57,7 @@ namespace Controllers
 
         public async Task<List<Order>> GetAllOrdersAsync()
         {
-            using (var context = new StoreContext(dbContextOptions))
+            using (var context = new StoreContext())
             {
                 return await context.Orders
                     .Include(o => o.User)
@@ -72,7 +69,7 @@ namespace Controllers
 
         public async Task<List<Order>> GetOrdersByUserIdAsync(int userId)
         {
-            using (var context = new StoreContext(dbContextOptions))
+            using (var context = new StoreContext())
             {
                 return await context.Orders
                     .Where(o => o.UserId == userId)
@@ -84,7 +81,7 @@ namespace Controllers
 
         public async Task FinishOrderAsync(int orderId)
         {
-            using (var context = new StoreContext(dbContextOptions))
+            using (var context = new StoreContext())
             {
                 var order = await context.Orders.FindAsync(orderId);
                 if (order != null)
@@ -97,7 +94,7 @@ namespace Controllers
 
         public async Task<bool> CancelOrderAsync(int orderId, int userId)
         {
-            using (var context = new StoreContext(dbContextOptions))
+            using (var context = new StoreContext())
             {
                 var order = await context.Orders
                                         .Include(o => o.OrderItems)

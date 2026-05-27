@@ -15,14 +15,12 @@ namespace WinFormsApp5
     {
         private readonly OrderController orderController;
         private readonly User currentUser;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public CustomerProfile(User user, DbContextOptions<StoreContext> options)
+        public CustomerProfile(User user)
         {
             InitializeComponent();
             currentUser = user;
-            dbContextOptions = options;
-            orderController = new OrderController(options);
+            orderController = new OrderController();
             this.Load += CustomerProfile_Load;
         }
 

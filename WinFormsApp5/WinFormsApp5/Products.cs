@@ -16,22 +16,20 @@ namespace WinFormsApp5
         private readonly ProductController productController;
         private readonly StoreContext storeContext;
         private readonly User currentUser;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
         private List<OrderItem> cartItems = new List<OrderItem>();
         private List<Product> loadedProducts = null!;
 
-        public Products(User user, DbContextOptions<StoreContext> options)
+        public Products(User user)
         {
             InitializeComponent();
             currentUser = user;
-            dbContextOptions = options;
-            storeContext = new StoreContext(options);
+            storeContext = new StoreContext();
             productController = new ProductController(storeContext);
         }
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login(dbContextOptions);
+            var loginForm = new Login();
             loginForm.Show();
             this.Hide();
         }
@@ -90,13 +88,13 @@ namespace WinFormsApp5
 
         private void viewCartButton_Click(object sender, EventArgs e)
         {
-            var cartForm = new Cart(currentUser, cartItems, dbContextOptions);
+            var cartForm = new Cart(currentUser, cartItems);
             cartForm.Show();
         }
 
         private void profileButton_Click(object sender, EventArgs e)
         {
-            var customerProfileForm = new CustomerProfile(currentUser, dbContextOptions);
+            var customerProfileForm = new CustomerProfile(currentUser);
             customerProfileForm.ShowDialog();
         }
 

@@ -14,16 +14,14 @@ namespace WinFormsApp5
         private readonly OrderController orderController;
         private readonly List<OrderItem> cartItems;
         private readonly User currentUser;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
 
-        public Cart(User user, List<OrderItem> cartItems, DbContextOptions<StoreContext> options)
+        public Cart(User user, List<OrderItem> cartItems)
         {
             InitializeComponent();
             this.cartItems = cartItems;
             currentUser = user;
-            dbContextOptions = options;
-            orderController = new OrderController(options);
+            orderController = new OrderController();
         }
 
         private void backButton_Click(object? sender, EventArgs e)
@@ -33,7 +31,7 @@ namespace WinFormsApp5
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login(dbContextOptions);
+            var loginForm = new Login();
             loginForm.Show();
             this.Hide();
         }

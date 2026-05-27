@@ -10,13 +10,11 @@ namespace WinFormsApp5
     {
         private readonly UserController userController;
         private readonly StoreContext storeContext;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public Register(DbContextOptions<StoreContext> options)
+        public Register()
         {
             InitializeComponent();
-            dbContextOptions = options;
-            storeContext = new StoreContext(options);
+            storeContext = new StoreContext();
             userController = new UserController(storeContext);
         }
 
@@ -32,7 +30,7 @@ namespace WinFormsApp5
             if (user != null)
             {
                 MessageBox.Show("Registration successful!");
-                var loginForm = new Login(dbContextOptions);
+                var loginForm = new Login();
                 loginForm.Show();
                 this.Hide();
             }
@@ -44,7 +42,7 @@ namespace WinFormsApp5
 
         private void backButton_Click(object sender, EventArgs e)
         {
-            var loginForm = new Login(dbContextOptions);
+            var loginForm = new Login();
             loginForm.Show();
             this.Hide();
         }

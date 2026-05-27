@@ -12,13 +12,11 @@ namespace WinFormsApp5
     {
         private readonly UserController userController;
         private readonly StoreContext storeContext;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
 
-        public Login(DbContextOptions<StoreContext> options)
+        public Login()
         {
             InitializeComponent();
-            dbContextOptions = options;
-            storeContext = new StoreContext(options);
+            storeContext = new StoreContext();
             userController = new UserController(storeContext);
         }
 
@@ -30,12 +28,12 @@ namespace WinFormsApp5
                 MessageBox.Show("Login successful!");
                 if (user.Role == Role.Admin)
                 {
-                    var adminForm = new AdminView(dbContextOptions);
+                    var adminForm = new AdminView();
                     adminForm.Show();
                 }
                 else
                 {
-                    var productsForm = new Products(user, dbContextOptions);
+                    var productsForm = new Products(user);
                     productsForm.Show();
                 }
                 this.Hide();
@@ -48,7 +46,7 @@ namespace WinFormsApp5
 
         private void registerButton_Click(object sender, EventArgs e)
         {
-            var registerForm = new Register(dbContextOptions);
+            var registerForm = new Register();
             registerForm.Show();
             this.Hide();
         }
