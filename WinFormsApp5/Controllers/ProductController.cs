@@ -14,6 +14,10 @@ namespace Controllers
         {
             this.context = context;
         }
+        public ProductController()
+        {
+            context = new StoreContext();
+        }
 
         public async Task<List<Product>> GetAllProductsAsync()
         {

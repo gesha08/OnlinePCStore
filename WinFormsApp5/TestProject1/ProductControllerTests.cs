@@ -73,8 +73,8 @@ namespace TestProject1
             {
                 var category = new Category { Name = "Storage" };
                 context.Categories.Add(category);
-                context.Products.Add(new Product { Name = "1TB NVMe SSD", Price = 100m, Stock = 50, Category = category });
-                context.Products.Add(new Product { Name = "4TB HDD", Price = 80m, Stock = 30, Category = category });
+                context.Products.Add(new Product { Name = "1TB NVMe SSD", Description = "A very fast ssd.", Price = 100m, Stock = 50, Category = category });
+                context.Products.Add(new Product { Name = "4TB HDD", Description = "A very slow hdd.", Price = 80m, Stock = 30, Category = category });
                 await context.SaveChangesAsync();
             }
 
@@ -93,7 +93,7 @@ namespace TestProject1
         public async Task UpdateProductAsync_ShouldUpdateProductDetails()
         {
             var category = new Category { Name = "Memory" };
-            var product = new Product { Name = "16GB DDR4 RAM", Price = 60m, Stock = 20, Category = category };
+            var product = new Product { Name = "16GB DDR4 RAM", Description = "Some ram.", Price = 60m, Stock = 20, Category = category };
             using (var context = new StoreContext(_options))
             {
                 context.Categories.Add(category);
@@ -122,7 +122,7 @@ namespace TestProject1
         public async Task DeleteProductAsync_ShouldRemoveProductFromDatabase()
         {
             var category = new Category { Name = "Cases" };
-            var product = new Product { Name = "Mid-Tower Case", Price = 90m, Stock = 5, Category = category };
+            var product = new Product { Name = "Mid-Tower Case", Description = "A case.", Price = 90m, Stock = 5, Category = category };
             using (var context = new StoreContext(_options))
             {
                 context.Categories.Add(category);

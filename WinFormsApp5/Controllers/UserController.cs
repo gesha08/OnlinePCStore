@@ -15,14 +15,23 @@ namespace Controllers
         {
             this.context = context;
         }
+        public UserController()
+        {
+            context = new StoreContext();
+        }
 
         public async Task<User?> LoginAsync(string username, string password)
         {
             return await context.Users.FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
         }
 
-        public async Task<User> RegisterAsync(string username, string password)
+        public async Task<User?> RegisterAsync(string username, string password)
         {
+            if (await context.Users.AnyAsync(u => u.Username == username))
+            {
+                return null;
+            }
+
             var user = new User
             {
                 Username = username,

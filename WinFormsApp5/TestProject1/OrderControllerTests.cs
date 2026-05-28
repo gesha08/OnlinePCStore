@@ -31,7 +31,7 @@ namespace TestProject1
 
                 _user = new User { Username = "customer", Password = "password", Role = Role.User };
                 _category = new Category { Name = "RAM" };
-                _product = new Product { Name = "DDR4 16GB", Price = 75.00m, Stock = 100, Category = _category };
+                _product = new Product { Name = "DDR4 16GB", Description = "A stick of ram.", Price = 75.00m, Stock = 100, Category = _category };
 
                 context.Users.Add(_user);
                 context.Categories.Add(_category);
@@ -59,7 +59,7 @@ namespace TestProject1
 
             using (var context = new StoreContext(_options))
             {
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 await controller.CreateOrderAsync(_user, orderItems, "123 Test St", "Credit Card", "1234", "12/26", "123");
             }
 
@@ -82,14 +82,14 @@ namespace TestProject1
         {
             using (var context = new StoreContext(_options))
             {
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 var orderItems = new List<OrderItem> { new OrderItem { ProductId = _product.Id, Quantity = 1, UnitPrice = _product.Price } };
                 await controller.CreateOrderAsync(_user, orderItems, "123 Test St", "Credit Card", null, null, null);
             }
 
             using (var context = new StoreContext(_options))
             {
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 var orders = await controller.GetAllOrdersAsync();
                 Assert.AreEqual(1, orders.Count);
             }
@@ -100,7 +100,7 @@ namespace TestProject1
         {
             using (var context = new StoreContext(_options))
             {
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 var orderItems = new List<OrderItem> { new OrderItem { ProductId = _product.Id, Quantity = 1, UnitPrice = _product.Price } };
                 await controller.CreateOrderAsync(_user, orderItems, "123 Test St", "Credit Card", null, null, null);
             }
@@ -111,7 +111,7 @@ namespace TestProject1
                 context.Users.Add(anotherUser);
                 await context.SaveChangesAsync();
 
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 var orders = await controller.GetOrdersByUserIdAsync(_user.Id);
                 var noOrders = await controller.GetOrdersByUserIdAsync(anotherUser.Id);
 
@@ -126,7 +126,7 @@ namespace TestProject1
             int orderId;
             using (var context = new StoreContext(_options))
             {
-                var order = new Order { UserId = _user.Id, Status = OrderStatus.Pending };
+                var order = new Order { UserId = _user.Id, Status = OrderStatus.Pending, Address = "Some Address", PaymentMethod = "Some Payement" };
                 context.Orders.Add(order);
                 await context.SaveChangesAsync();
                 orderId = order.Id;
@@ -134,7 +134,7 @@ namespace TestProject1
 
             using (var context = new StoreContext(_options))
             {
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 await controller.FinishOrderAsync(orderId);
             }
 
@@ -151,17 +151,16 @@ namespace TestProject1
             int orderId;
             using (var context = new StoreContext(_options))
             {
-                var orderItems = new List<OrderItem> { new OrderItem { ProductId = _product.Id, Product = _product, Quantity = 5, UnitPrice = _product.Price } };
-                var order = new Order { UserId = _user.Id, OrderItems = orderItems, Status = OrderStatus.Pending };
-                context.Orders.Add(order);
-                _product.Stock -= 5;
-                await context.SaveChangesAsync();
+                var controller = new OrderController(context);
+                var product = await context.Products.FirstAsync();
+                var orderItems = new List<OrderItem> { new OrderItem { ProductId = product.Id, Quantity = 5, UnitPrice = product.Price } };
+                var order = await controller.CreateOrderAsync(_user, orderItems, "Some Address", "Some Payement", null, null, null);
                 orderId = order.Id;
             }
 
             using (var context = new StoreContext(_options))
             {
-                var controller = new OrderController();
+                var controller = new OrderController(context);
                 var result = await controller.CancelOrderAsync(orderId, _user.Id);
                 Assert.IsTrue(result);
             }
