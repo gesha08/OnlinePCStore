@@ -15,6 +15,7 @@ namespace Controllers
             this.context = context;
         }
 
+
         public async Task<List<Category>> GetAllCategoriesAsync()
         {
             return await context.Categories.ToListAsync();

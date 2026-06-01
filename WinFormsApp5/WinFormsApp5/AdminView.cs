@@ -18,17 +18,16 @@ namespace WinFormsApp5
         private readonly CategoryController categoryController;
         private readonly OrderController orderController;
         private readonly StoreContext storeContext;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
         private byte[]? selectedProductPicture;
+        private bool isBusy = false;
 
-        public AdminView(DbContextOptions<StoreContext> options)
+        public AdminView()
         {
             InitializeComponent();
-            dbContextOptions = options;
-            storeContext = new StoreContext(options);
+            storeContext = new StoreContext();
             productController = new ProductController(storeContext);
             categoryController = new CategoryController(storeContext);
-            orderController = new OrderController(options);
+            orderController = new OrderController(storeContext);
 
             productsDataGridView.SelectionChanged += new System.EventHandler(productsDataGridView_SelectionChanged);
         }
@@ -51,7 +50,7 @@ namespace WinFormsApp5
 
         private void logoutButton_Click(object? sender, EventArgs e)
         {
-            var loginForm = new Login(dbContextOptions);
+            var loginForm = new Login();
             loginForm.Show();
             this.Hide();
         }
@@ -63,9 +62,18 @@ namespace WinFormsApp5
 
         private async void AdminView_Load(object sender, EventArgs e)
         {
-            await LoadProducts();
-            await LoadCategories();
-            await LoadOrders();
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                await LoadProducts();
+                await LoadCategories();
+                await LoadOrders();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
 
         private List<Product> loadedProducts = null!;
@@ -110,82 +118,119 @@ namespace WinFormsApp5
 
         private async void finishOrderAdminButton_Click(object sender, EventArgs e)
         {
-            if (ordersDataGridView.CurrentRow == null) return;
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                if (ordersDataGridView.CurrentRow == null) return;
 
-            var orderId = (int)ordersDataGridView.CurrentRow.Cells["Id"].Value;
-            await orderController.FinishOrderAsync(orderId);
-            await LoadOrders();
+                var orderId = (int)ordersDataGridView.CurrentRow.Cells["Id"].Value;
+                await orderController.FinishOrderAsync(orderId);
+                await LoadOrders();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
 
         private async void addProductButton_Click(object sender, EventArgs e)
         {
-            if (categoryComboBox.SelectedValue == null)
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                MessageBox.Show("Please select a category.");
-                return;
-            }
+                if (categoryComboBox.SelectedValue == null)
+                {
+                    MessageBox.Show("Please select a category.");
+                    return;
+                }
 
-            if (!decimal.TryParse(priceTextBox.Text, out decimal price))
-            {
-                MessageBox.Show("Please enter a valid price.");
-                return;
-            }
+                if (!decimal.TryParse(priceTextBox.Text, out decimal price))
+                {
+                    MessageBox.Show("Please enter a valid price.");
+                    return;
+                }
 
-            if (!int.TryParse(stockTextBox.Text, out int stock))
-            {
-                MessageBox.Show("Please enter a valid stock amount.");
-                return;
-            }
+                if (!int.TryParse(stockTextBox.Text, out int stock))
+                {
+                    MessageBox.Show("Please enter a valid stock amount.");
+                    return;
+                }
 
-            var product = new Product
+                var existingProduct = await productController.GetProductByDetailsAsync(nameTextBox.Text, descriptionTextBox.Text, price);
+                if (existingProduct != null)
+                {
+                    existingProduct.Stock += stock;
+                    await productController.UpdateProductAsync(existingProduct);
+                }
+                else
+                {
+                    var product = new Product
+                    {
+                        Name = nameTextBox.Text,
+                        Description = descriptionTextBox.Text,
+                        Price = price,
+                        Stock = stock,
+                        Picture = selectedProductPicture,
+                        CategoryId = (int)categoryComboBox.SelectedValue
+                    };
+                    await productController.AddProductAsync(product);
+                }
+
+                selectedProductPicture = null;
+                selectPictureButton.Text = "Choose...";
+                await LoadProducts();
+            }
+            finally
             {
-                Name = nameTextBox.Text,
-                Description = descriptionTextBox.Text,
-                Price = price,
-                Stock = stock,
-                Picture = selectedProductPicture,
-                CategoryId = (int)categoryComboBox.SelectedValue
-            };
-            await productController.AddProductAsync(product);
-            selectedProductPicture = null;
-            selectPictureButton.Text = "Choose...";
-            await LoadProducts();
+                isBusy = false;
+            }
         }
 
         private async void updateProductButton_Click(object sender, EventArgs e)
         {
-            if (productsDataGridView.CurrentRow == null) return;
-
-            if (categoryComboBox.SelectedValue == null)
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                MessageBox.Show("Please select a category.");
-                return;
-            }
+                if (productsDataGridView.CurrentRow == null) return;
 
-            if (!decimal.TryParse(priceTextBox.Text, out decimal price))
+                if (categoryComboBox.SelectedValue == null)
+                {
+                    MessageBox.Show("Please select a category.");
+                    return;
+                }
+
+                if (!decimal.TryParse(priceTextBox.Text, out decimal price))
+                {
+                    MessageBox.Show("Please enter a valid price.");
+                    return;
+                }
+
+                if (!int.TryParse(stockTextBox.Text, out int stock))
+                {
+                    MessageBox.Show("Please enter a valid stock amount.");
+                    return;
+                }
+
+                var productId = (int)productsDataGridView.CurrentRow.Cells["Id"].Value;
+                var product = loadedProducts.First(p => p.Id == productId);
+
+                product.Name = nameTextBox.Text;
+                product.Description = descriptionTextBox.Text;
+                product.Price = price;
+                product.Stock = stock;
+                product.Picture = selectedProductPicture;
+                product.CategoryId = (int)categoryComboBox.SelectedValue;
+
+                await productController.UpdateProductAsync(product);
+                await LoadProducts();
+            }
+            finally
             {
-                MessageBox.Show("Please enter a valid price.");
-                return;
+                isBusy = false;
             }
-
-            if (!int.TryParse(stockTextBox.Text, out int stock))
-            {
-                MessageBox.Show("Please enter a valid stock amount.");
-                return;
-            }
-
-            var productId = (int)productsDataGridView.CurrentRow.Cells["Id"].Value;
-            var product = loadedProducts.First(p => p.Id == productId);
-
-            product.Name = nameTextBox.Text;
-            product.Description = descriptionTextBox.Text;
-            product.Price = price;
-            product.Stock = stock;
-            product.Picture = selectedProductPicture;
-            product.CategoryId = (int)categoryComboBox.SelectedValue;
-
-            await productController.UpdateProductAsync(product);
-            await LoadProducts();
         }
 
         private void selectPictureButton_Click(object sender, EventArgs e)
@@ -207,40 +252,76 @@ namespace WinFormsApp5
 
         private async void deleteProductButton_Click(object sender, EventArgs e)
         {
-            if (productsDataGridView.CurrentRow == null) return;
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                if (productsDataGridView.CurrentRow == null) return;
 
-            var productId = (int)productsDataGridView.CurrentRow.Cells["Id"].Value;
-            await productController.DeleteProductAsync(productId);
-            await LoadProducts();
+                var productId = (int)productsDataGridView.CurrentRow.Cells["Id"].Value;
+                await productController.DeleteProductAsync(productId);
+                await LoadProducts();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
 
         private async void addCategoryButton_Click(object sender, EventArgs e)
         {
-            var category = new Category
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                Name = categoryNameTextBox.Text
-            };
-            await categoryController.AddCategoryAsync(category);
-            await LoadCategories();
+                var category = new Category
+                {
+                    Name = categoryNameTextBox.Text
+                };
+                await categoryController.AddCategoryAsync(category);
+                await LoadCategories();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
 
         private async void updateCategoryButton_Click(object sender, EventArgs e)
         {
-            if (categoriesDataGridView.CurrentRow == null) return;
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                if (categoriesDataGridView.CurrentRow == null) return;
 
-            var category = (Category)categoriesDataGridView.CurrentRow.DataBoundItem;
-            category.Name = categoryNameTextBox.Text;
-            await categoryController.UpdateCategoryAsync(category);
-            await LoadCategories();
+                var category = (Category)categoriesDataGridView.CurrentRow.DataBoundItem;
+                category.Name = categoryNameTextBox.Text;
+                await categoryController.UpdateCategoryAsync(category);
+                await LoadCategories();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
 
         private async void deleteCategoryButton_Click(object sender, EventArgs e)
         {
-            if (categoriesDataGridView.CurrentRow == null) return;
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                if (categoriesDataGridView.CurrentRow == null) return;
 
-            var category = (Category)categoriesDataGridView.CurrentRow.DataBoundItem;
-            await categoryController.DeleteCategoryAsync(category.Id);
-            await LoadCategories();
+                var category = (Category)categoriesDataGridView.CurrentRow.DataBoundItem;
+                await categoryController.DeleteCategoryAsync(category.Id);
+                await LoadCategories();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
     }
 }

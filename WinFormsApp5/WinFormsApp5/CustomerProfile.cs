@@ -15,21 +15,31 @@ namespace WinFormsApp5
     {
         private readonly OrderController orderController;
         private readonly User currentUser;
-        private readonly DbContextOptions<StoreContext> dbContextOptions;
+        private readonly StoreContext context;
+        private bool isBusy = false;
 
-        public CustomerProfile(User user, DbContextOptions<StoreContext> options)
+        public CustomerProfile(User user, StoreContext context)
         {
             InitializeComponent();
             currentUser = user;
-            dbContextOptions = options;
-            orderController = new OrderController(options);
+            this.context = context;
+            orderController = new OrderController(context);
             this.Load += CustomerProfile_Load;
         }
 
         private async void CustomerProfile_Load(object? sender, EventArgs e)
         {
-            usernameLabel.Text = $"Welcome, {currentUser.Username}!";
-            await LoadOrders();
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                usernameLabel.Text = $"Welcome, {currentUser.Username}!";
+                await LoadOrders();
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
 
         private async Task LoadOrders()
@@ -58,41 +68,50 @@ namespace WinFormsApp5
 
         private async void ordersDataGridView_CellContentClick(object? sender, DataGridViewCellEventArgs e)
         {
-            var cancelColumn = ordersDataGridView.Columns["cancelOrderColumn"];
-            if (cancelColumn == null) return; // Add null check for the column
-
-            if (e.ColumnIndex == cancelColumn.Index && e.RowIndex >= 0)
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                var selectedRow = ordersDataGridView.Rows[e.RowIndex];
-                var orderId = (int)selectedRow.Cells["Id"]!.Value; // Use null-forgiving operator
-                
-                var statusCell = ordersDataGridView.Rows[e.RowIndex].Cells["Status"]; 
-                if (statusCell?.Value is not OrderStatus orderStatus) 
-                {
-                    orderStatus = OrderStatus.Pending; // Default if status is null or not OrderStatus
-                }
+                var cancelColumn = ordersDataGridView.Columns["cancelOrderColumn"];
+                if (cancelColumn == null) return; // Add null check for the column
 
-                if (orderStatus == OrderStatus.Pending)
+                if (e.ColumnIndex == cancelColumn.Index && e.RowIndex >= 0)
                 {
-                    var confirmResult = MessageBox.Show("Are you sure you want to cancel this order?", "Confirm Cancel", MessageBoxButtons.YesNo);
-                    if (confirmResult == DialogResult.Yes)
+                    var selectedRow = ordersDataGridView.Rows[e.RowIndex];
+                    var orderId = (int)selectedRow.Cells["Id"]!.Value; // Use null-forgiving operator
+
+                    var statusCell = ordersDataGridView.Rows[e.RowIndex].Cells["Status"];
+                    if (statusCell?.Value is not OrderStatus orderStatus)
                     {
-                        var success = await orderController.CancelOrderAsync(orderId, currentUser.Id);
-                        if (success)
+                        orderStatus = OrderStatus.Pending; // Default if status is null or not OrderStatus
+                    }
+
+                    if (orderStatus == OrderStatus.Pending)
+                    {
+                        var confirmResult = MessageBox.Show("Are you sure you want to cancel this order?", "Confirm Cancel", MessageBoxButtons.YesNo);
+                        if (confirmResult == DialogResult.Yes)
                         {
-                            MessageBox.Show("Order cancelled successfully!");
-                            await LoadOrders(); // Reload orders to update UI
-                        }
-                        else
-                        {
-                            MessageBox.Show("Failed to cancel order. Only pending orders can be cancelled, or you don't have permission.");
+                            var success = await orderController.CancelOrderAsync(orderId, currentUser.Id);
+                            if (success)
+                            {
+                                MessageBox.Show("Order cancelled successfully!");
+                                await LoadOrders(); // Reload orders to update UI
+                            }
+                            else
+                            {
+                                MessageBox.Show("Failed to cancel order. Only pending orders can be cancelled, or you don't have permission.");
+                            }
                         }
                     }
+                    else
+                    {
+                        MessageBox.Show("Only pending orders can be cancelled.");
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("Only pending orders can be cancelled.");
-                }
+            }
+            finally
+            {
+                isBusy = false;
             }
         }
 
