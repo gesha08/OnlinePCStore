@@ -90,8 +90,7 @@
               "RelativeToolTip": "WinFormsApp5\\Cart.Designer.cs",
               "ViewState": "AgIAAGYAAAAAAAAAAAAYwKoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-19T11:00:00.87Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-19T11:00:00.87Z"
             },
             {
               "$type": "Document",
@@ -177,7 +176,7 @@
               "RelativeDocumentMoniker": "Data\\StoreContext.cs",
               "ToolTip": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\Data\\StoreContext.cs",
               "RelativeToolTip": "Data\\StoreContext.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAxwBUAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAoAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-18T10:52:05.697Z",
               "EditorCaption": ""
@@ -192,8 +191,7 @@
               "RelativeToolTip": "Data\\Migrations\\20260518105814_First.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-18T10:58:14.778Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-18T10:58:14.778Z"
             },
             {
               "$type": "Bookmark",
@@ -241,8 +239,7 @@
               "ToolTip": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\WinFormsApp5\\Cart.cs [Design]",
               "RelativeToolTip": "WinFormsApp5\\Cart.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-18T10:20:55.98Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2026-05-18T10:20:55.98Z"
             },
             {
               "$type": "Document",
@@ -253,8 +250,7 @@
               "ToolTip": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\WinFormsApp5\\AdminView.cs [Design]",
               "RelativeToolTip": "WinFormsApp5\\AdminView.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-18T10:20:02.597Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2026-05-18T10:20:02.597Z"
             },
             {
               "$type": "Document",
@@ -265,8 +261,7 @@
               "ToolTip": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\WinFormsApp5\\Register.cs [Design]",
               "RelativeToolTip": "WinFormsApp5\\Register.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-18T10:19:44.776Z",
-              "EditorCaption": " [Design]"
+              "WhenOpened": "2026-05-18T10:19:44.776Z"
             },
             {
               "$type": "Document",
@@ -274,8 +269,8 @@
               "Title": "Login.cs [Design]",
               "DocumentMoniker": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\WinFormsApp5\\Login.cs",
               "RelativeDocumentMoniker": "WinFormsApp5\\Login.cs",
-              "ToolTip": "C:\\Users\\11B_23\\source\\repos\\WinFormsApp5\\WinFormsApp5\\Login.cs [Design]",
-              "RelativeToolTip": "..\\..\\WinFormsApp5\\WinFormsApp5\\Login.cs [Design]",
+              "ToolTip": "C:\\Users\\11B_23\\source\\repos\\OnlinePCStore\\WinFormsApp5\\WinFormsApp5\\Login.cs [Design]",
+              "RelativeToolTip": "WinFormsApp5\\Login.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-18T10:16:22.362Z"
             }
