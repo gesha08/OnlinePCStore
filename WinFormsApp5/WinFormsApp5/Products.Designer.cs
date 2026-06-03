@@ -36,8 +36,14 @@ namespace WinFormsApp5
             logoutButton = new Button();
             viewCartButton = new Button();
             profileButton = new Button();
+            searchPanel = new Panel();
+            resetButton = new Button();
+            searchButton = new Button();
+            categoryComboBox = new ComboBox();
+            searchTextBox = new TextBox();
             ((System.ComponentModel.ISupportInitialize)productsDataGridView).BeginInit();
             panel1.SuspendLayout();
+            searchPanel.SuspendLayout();
             SuspendLayout();
             // 
             // productsDataGridView
@@ -67,14 +73,12 @@ namespace WinFormsApp5
             productsDataGridView.Dock = DockStyle.Fill;
             productsDataGridView.EnableHeadersVisualStyles = false;
             productsDataGridView.GridColor = Color.FromArgb(78, 184, 206);
-            productsDataGridView.Location = new Point(0, 0);
             productsDataGridView.Margin = new Padding(3, 4, 3, 4);
             productsDataGridView.Name = "productsDataGridView";
             productsDataGridView.ReadOnly = true;
             productsDataGridView.RowHeadersVisible = false;
             productsDataGridView.RowHeadersWidth = 51;
             productsDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            productsDataGridView.Size = new Size(914, 600);
             productsDataGridView.TabIndex = 0;
             productsDataGridView.CellClick += productsDataGridView_CellClick;
             productsDataGridView.CellContentClick += productsDataGridView_CellContentClick;
@@ -159,14 +163,72 @@ namespace WinFormsApp5
             profileButton.UseVisualStyleBackColor = false;
             profileButton.Click += profileButton_Click;
             // 
+            // searchPanel
+            // 
+            searchPanel.Controls.Add(resetButton);
+            searchPanel.Controls.Add(searchButton);
+            searchPanel.Controls.Add(categoryComboBox);
+            searchPanel.Controls.Add(searchTextBox);
+            searchPanel.Dock = DockStyle.Top;
+            searchPanel.Location = new Point(0, 0);
+            searchPanel.Name = "searchPanel";
+            searchPanel.Size = new Size(914, 50);
+            searchPanel.TabIndex = 2;
+            // 
+            // resetButton
+            // 
+            resetButton.BackColor = Color.FromArgb(78, 184, 206);
+            resetButton.FlatAppearance.BorderSize = 0;
+            resetButton.FlatStyle = FlatStyle.Flat;
+            resetButton.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            resetButton.ForeColor = Color.White;
+            resetButton.Location = new Point(550, 4);
+            resetButton.Name = "resetButton";
+            resetButton.Size = new Size(101, 40);
+            resetButton.TabIndex = 3;
+            resetButton.Text = "Reset";
+            resetButton.UseVisualStyleBackColor = false;
+            resetButton.Click += resetButton_Click;
+            // 
+            // searchButton
+            // 
+            searchButton.BackColor = Color.FromArgb(78, 184, 206);
+            searchButton.FlatAppearance.BorderSize = 0;
+            searchButton.FlatStyle = FlatStyle.Flat;
+            searchButton.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
+            searchButton.ForeColor = Color.White;
+            searchButton.Location = new Point(443, 4);
+            searchButton.Name = "searchButton";
+            searchButton.Size = new Size(101, 40);
+            searchButton.TabIndex = 2;
+            searchButton.Text = "Search";
+            searchButton.UseVisualStyleBackColor = false;
+            searchButton.Click += searchButton_Click;
+            // 
+            // categoryComboBox
+            // 
+            categoryComboBox.FormattingEnabled = true;
+            categoryComboBox.Location = new Point(234, 12);
+            categoryComboBox.Name = "categoryComboBox";
+            categoryComboBox.Size = new Size(182, 28);
+            categoryComboBox.TabIndex = 1;
+            // 
+            // searchTextBox
+            // 
+            searchTextBox.Location = new Point(12, 12);
+            searchTextBox.Name = "searchTextBox";
+            searchTextBox.Size = new Size(200, 27);
+            searchTextBox.TabIndex = 0;
+            // 
             // Products
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(34, 36, 49);
             ClientSize = new Size(914, 600);
-            Controls.Add(panel1);
             Controls.Add(productsDataGridView);
+            Controls.Add(searchPanel);
+            Controls.Add(panel1);
             Margin = new Padding(3, 4, 3, 4);
             Name = "Products";
             StartPosition = FormStartPosition.CenterScreen;
@@ -174,6 +236,8 @@ namespace WinFormsApp5
             Load += Products_Load;
             ((System.ComponentModel.ISupportInitialize)productsDataGridView).EndInit();
             panel1.ResumeLayout(false);
+            searchPanel.ResumeLayout(false);
+            searchPanel.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -185,5 +249,10 @@ namespace WinFormsApp5
         private Button quitButton;
         private Button logoutButton;
         private Button profileButton;
+        private Panel searchPanel;
+        private Button resetButton;
+        private Button searchButton;
+        private ComboBox categoryComboBox;
+        private TextBox searchTextBox;
     }
 }
