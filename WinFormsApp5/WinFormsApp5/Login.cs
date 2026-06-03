@@ -12,6 +12,7 @@ namespace WinFormsApp5
     {
         private readonly UserController userController;
         private readonly StoreContext storeContext;
+        private bool isBusy = false;
 
         public Login()
         {
@@ -22,25 +23,34 @@ namespace WinFormsApp5
 
         private async void loginButton_Click(object sender, EventArgs e)
         {
-            var user = await userController.LoginAsync(usernameTextBox.Text, passwordTextBox.Text);
-            if (user != null)
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                MessageBox.Show("Login successful!");
-                if (user.Role == Role.Admin)
+                var user = await userController.LoginAsync(usernameTextBox.Text, passwordTextBox.Text);
+                if (user != null)
                 {
-                    var adminForm = new AdminView();
-                    adminForm.Show();
+                    MessageBox.Show("Login successful!");
+                    if (user.Role == Role.Admin)
+                    {
+                        var adminForm = new AdminView();
+                        adminForm.Show();
+                    }
+                    else
+                    {
+                        var productsForm = new Products(user);
+                        productsForm.Show();
+                    }
+                    this.Hide();
                 }
                 else
                 {
-                    var productsForm = new Products(user);
-                    productsForm.Show();
+                    MessageBox.Show("Invalid username or password.");
                 }
-                this.Hide();
             }
-            else
+            finally
             {
-                MessageBox.Show("Invalid username or password.");
+                isBusy = false;
             }
         }
 

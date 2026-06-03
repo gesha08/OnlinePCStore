@@ -15,10 +15,7 @@ namespace Controllers
         {
             this.context = context;
         }
-        public UserController()
-        {
-            context = new StoreContext();
-        }
+
 
         public async Task<User?> LoginAsync(string username, string password)
         {

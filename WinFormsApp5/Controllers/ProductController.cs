@@ -14,14 +14,16 @@ namespace Controllers
         {
             this.context = context;
         }
-        public ProductController()
-        {
-            context = new StoreContext();
-        }
+
 
         public async Task<List<Product>> GetAllProductsAsync()
         {
             return await context.Products.Include(p => p.Category).ToListAsync();
+        }
+
+        public async Task<Product?> GetProductByDetailsAsync(string name, string description, decimal price)
+        {
+            return await context.Products.FirstOrDefaultAsync(p => p.Name == name && p.Description == description && p.Price == price);
         }
 
         public async Task AddProductAsync(Product product)

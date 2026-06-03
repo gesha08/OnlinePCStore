@@ -17,10 +17,7 @@ namespace Controllers
         {
             _context = context;
         }
-        public OrderController()
-        {
-            _context = new StoreContext();
-        }
+
 
         public async Task<Order> CreateOrderAsync(User user, List<OrderItem> orderItems, string address, string paymentMethod, string? cardNumber, string? expiryDate, string? cvv)
         {

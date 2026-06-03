@@ -14,14 +14,16 @@ namespace WinFormsApp5
         private readonly OrderController orderController;
         private readonly List<OrderItem> cartItems;
         private readonly User currentUser;
+        private readonly StoreContext context;
 
 
-        public Cart(User user, List<OrderItem> cartItems)
+        public Cart(User user, List<OrderItem> cartItems, StoreContext context)
         {
             InitializeComponent();
             this.cartItems = cartItems;
             currentUser = user;
-            orderController = new OrderController();
+            this.context = context;
+            orderController = new OrderController(context);
         }
 
         private void backButton_Click(object? sender, EventArgs e)

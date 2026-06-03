@@ -18,6 +18,7 @@ namespace WinFormsApp5
         private readonly User currentUser;
         private List<OrderItem> cartItems = new List<OrderItem>();
         private List<Product> loadedProducts = null!;
+        private bool isBusy = false;
 
         public Products(User user)
         {
@@ -41,37 +42,46 @@ namespace WinFormsApp5
 
         private async void Products_Load(object sender, EventArgs e)
         {
-            loadedProducts = await productController.GetAllProductsAsync();
-            productsDataGridView.DataSource = loadedProducts.Select(p => new
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                p.Id,
-                Picture = CreateImageFromBytes(p.Picture),
-                p.Name,
-                p.Description,
-                p.Price,
-                p.Stock,
-                Category = p.Category.Name
-            }).ToList();
+                loadedProducts = await productController.GetAllProductsAsync();
+                productsDataGridView.DataSource = loadedProducts.Select(p => new
+                {
+                    p.Id,
+                    Picture = CreateImageFromBytes(p.Picture),
+                    p.Name,
+                    p.Description,
+                    p.Price,
+                    p.Stock,
+                    Category = p.Category.Name
+                }).ToList();
 
-            productsDataGridView.RowTemplate.Height = 70;
-            foreach (DataGridViewRow row in productsDataGridView.Rows)
-            {
-                row.Height = 70;
+                productsDataGridView.RowTemplate.Height = 70;
+                foreach (DataGridViewRow row in productsDataGridView.Rows)
+                {
+                    row.Height = 70;
+                }
+
+                if (productsDataGridView.Columns["Picture"] is DataGridViewImageColumn pictureColumn)
+                {
+                    pictureColumn.HeaderText = "Picture";
+                    pictureColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
+                    pictureColumn.DefaultCellStyle.NullValue = null;
+                }
+
+                var addToCartButtonColumn = new DataGridViewButtonColumn();
+                addToCartButtonColumn.Name = "addToCartButtonColumn";
+                addToCartButtonColumn.HeaderText = "Add to Cart";
+                addToCartButtonColumn.Text = "Add to Cart";
+                addToCartButtonColumn.UseColumnTextForButtonValue = true;
+                productsDataGridView.Columns.Add(addToCartButtonColumn);
             }
-
-            if (productsDataGridView.Columns["Picture"] is DataGridViewImageColumn pictureColumn)
+            finally
             {
-                pictureColumn.HeaderText = "Picture";
-                pictureColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
-                pictureColumn.DefaultCellStyle.NullValue = null;
+                isBusy = false;
             }
-
-            var addToCartButtonColumn = new DataGridViewButtonColumn();
-            addToCartButtonColumn.Name = "addToCartButtonColumn";
-            addToCartButtonColumn.HeaderText = "Add to Cart";
-            addToCartButtonColumn.Text = "Add to Cart";
-            addToCartButtonColumn.UseColumnTextForButtonValue = true;
-            productsDataGridView.Columns.Add(addToCartButtonColumn);
         }
 
         private static Image? CreateImageFromBytes(byte[]? picture)
@@ -88,13 +98,13 @@ namespace WinFormsApp5
 
         private void viewCartButton_Click(object sender, EventArgs e)
         {
-            var cartForm = new Cart(currentUser, cartItems);
+            var cartForm = new Cart(currentUser, cartItems, storeContext);
             cartForm.Show();
         }
 
         private void profileButton_Click(object sender, EventArgs e)
         {
-            var customerProfileForm = new CustomerProfile(currentUser);
+            var customerProfileForm = new CustomerProfile(currentUser, storeContext);
             customerProfileForm.ShowDialog();
         }
 
@@ -104,14 +114,25 @@ namespace WinFormsApp5
             {
                 var productId = (int)productsDataGridView.Rows[e.RowIndex].Cells["Id"].Value;
                 var product = loadedProducts.First(p => p.Id == productId);
-                var orderItem = new OrderItem
+
+                var existingCartItem = cartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+                if (existingCartItem != null)
                 {
-                    ProductId = product.Id,
-                    Product = product,
-                    Quantity = 1,
-                    UnitPrice = product.Price
-                };
-                cartItems.Add(orderItem);
+                    existingCartItem.Quantity++;
+                }
+                else
+                {
+                    var orderItem = new OrderItem
+                    {
+                        ProductId = product.Id,
+                        Product = product,
+                        Quantity = 1,
+                        UnitPrice = product.Price
+                    };
+                    cartItems.Add(orderItem);
+                }
+
                 MessageBox.Show($"{product.Name} added to cart.");
             }
         }

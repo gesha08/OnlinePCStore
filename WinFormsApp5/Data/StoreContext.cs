@@ -25,7 +25,6 @@ namespace Data
             if (!optionsBuilder.IsConfigured)
             {
                 var configuration = new ConfigurationBuilder()
-                    .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..\\WinFormsApp5"))
                     .AddJsonFile("appsettings.json")
                     .Build();
 
@@ -37,6 +36,10 @@ namespace Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "admin", Password = "admin", Role = Enums.Role.Admin }
+            );
         }
     }
 }

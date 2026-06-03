@@ -10,6 +10,7 @@ namespace WinFormsApp5
     {
         private readonly UserController userController;
         private readonly StoreContext storeContext;
+        private bool isBusy = false;
 
         public Register()
         {
@@ -20,23 +21,32 @@ namespace WinFormsApp5
 
         private async void registerButton_Click(object sender, EventArgs e)
         {
-            if (passwordTextBox.Text != confirmPasswordTextBox.Text)
+            if (isBusy) return;
+            isBusy = true;
+            try
             {
-                MessageBox.Show("Passwords do not match.");
-                return;
-            }
+                if (passwordTextBox.Text != confirmPasswordTextBox.Text)
+                {
+                    MessageBox.Show("Passwords do not match.");
+                    return;
+                }
 
-            var user = await userController.RegisterAsync(usernameTextBox.Text, passwordTextBox.Text);
-            if (user != null)
-            {
-                MessageBox.Show("Registration successful!");
-                var loginForm = new Login();
-                loginForm.Show();
-                this.Hide();
+                var user = await userController.RegisterAsync(usernameTextBox.Text, passwordTextBox.Text);
+                if (user != null)
+                {
+                    MessageBox.Show("Registration successful!");
+                    var loginForm = new Login();
+                    loginForm.Show();
+                    this.Hide();
+                }
+                else
+                {
+                    MessageBox.Show("Registration failed.");
+                }
             }
-            else
+            finally
             {
-                MessageBox.Show("Registration failed.");
+                isBusy = false;
             }
         }
 
