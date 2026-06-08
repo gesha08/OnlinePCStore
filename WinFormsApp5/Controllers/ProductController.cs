@@ -47,5 +47,22 @@ namespace Controllers
                 await context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<Product>> SearchProductsAsync(string? searchTerm, int? categoryId)
+        {
+            var query = context.Products.Include(p => p.Category).AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()));
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

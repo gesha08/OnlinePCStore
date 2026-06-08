@@ -14,6 +14,7 @@ namespace WinFormsApp5
     public partial class Products : Form
     {
         private readonly ProductController productController;
+        private readonly CategoryController categoryController;
         private readonly StoreContext storeContext;
         private readonly User currentUser;
         private List<OrderItem> cartItems = new List<OrderItem>();
@@ -26,6 +27,7 @@ namespace WinFormsApp5
             currentUser = user;
             storeContext = new StoreContext();
             productController = new ProductController(storeContext);
+            categoryController = new CategoryController(storeContext);
         }
 
         private void logoutButton_Click(object? sender, EventArgs e)
@@ -46,41 +48,56 @@ namespace WinFormsApp5
             isBusy = true;
             try
             {
+                var categories = await categoryController.GetAllCategoriesAsync();
+                var allCategories = new Category { Id = 0, Name = "All Categories" };
+                categories.Insert(0, allCategories);
+                categoryComboBox.DataSource = categories;
+                categoryComboBox.DisplayMember = "Name";
+                categoryComboBox.ValueMember = "Id";
+
                 loadedProducts = await productController.GetAllProductsAsync();
-                productsDataGridView.DataSource = loadedProducts.Select(p => new
-                {
-                    p.Id,
-                    Picture = CreateImageFromBytes(p.Picture),
-                    p.Name,
-                    p.Description,
-                    p.Price,
-                    p.Stock,
-                    Category = p.Category.Name
-                }).ToList();
+                UpdateDataSource(loadedProducts);
+            }
+            finally
+            {
+                isBusy = false;
+            }
+        }
 
-                productsDataGridView.RowTemplate.Height = 70;
-                foreach (DataGridViewRow row in productsDataGridView.Rows)
-                {
-                    row.Height = 70;
-                }
+        private void UpdateDataSource(List<Product> products)
+        {
+            productsDataGridView.DataSource = products.Select(p => new
+            {
+                p.Id,
+                Picture = CreateImageFromBytes(p.Picture),
+                p.Name,
+                p.Description,
+                p.Price,
+                p.Stock,
+                Category = p.Category.Name
+            }).ToList();
 
-                if (productsDataGridView.Columns["Picture"] is DataGridViewImageColumn pictureColumn)
-                {
-                    pictureColumn.HeaderText = "Picture";
-                    pictureColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
-                    pictureColumn.DefaultCellStyle.NullValue = null;
-                }
+            productsDataGridView.RowTemplate.Height = 70;
+            foreach (DataGridViewRow row in productsDataGridView.Rows)
+            {
+                row.Height = 70;
+            }
 
+            if (productsDataGridView.Columns["Picture"] is DataGridViewImageColumn pictureColumn)
+            {
+                pictureColumn.HeaderText = "Picture";
+                pictureColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
+                pictureColumn.DefaultCellStyle.NullValue = null;
+            }
+
+            if (productsDataGridView.Columns["addToCartButtonColumn"] == null)
+            {
                 var addToCartButtonColumn = new DataGridViewButtonColumn();
                 addToCartButtonColumn.Name = "addToCartButtonColumn";
                 addToCartButtonColumn.HeaderText = "Add to Cart";
                 addToCartButtonColumn.Text = "Add to Cart";
                 addToCartButtonColumn.UseColumnTextForButtonValue = true;
                 productsDataGridView.Columns.Add(addToCartButtonColumn);
-            }
-            finally
-            {
-                isBusy = false;
             }
         }
 
@@ -140,6 +157,41 @@ namespace WinFormsApp5
         private void productsDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private async void searchButton_Click(object sender, EventArgs e)
+        {
+            if(isBusy) return;
+            isBusy = true;
+            try
+            {
+                var searchTerm = searchTextBox.Text;
+                var categoryId = (int)categoryComboBox.SelectedValue;
+
+                loadedProducts = await productController.SearchProductsAsync(searchTerm, categoryId == 0 ? null : categoryId);
+                UpdateDataSource(loadedProducts);
+            }
+            finally
+            {
+                isBusy = false;
+            }
+        }
+
+        private async void resetButton_Click(object sender, EventArgs e)
+        {
+            if (isBusy) return;
+            isBusy = true;
+            try
+            {
+                searchTextBox.Clear();
+                categoryComboBox.SelectedValue = 0;
+                loadedProducts = await productController.GetAllProductsAsync();
+                UpdateDataSource(loadedProducts);
+            }
+            finally
+            {
+                isBusy = false;
+            }
         }
     }
 }
